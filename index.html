@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>IPL Auction Arena</title>
+<style>
+:root{--bg1:#050505;--bg2:#101010;--card:#171717;--line:#3A3020;--tx:#F7F3E8;--mut:#B7AD9A;--gold:#D4AF37;--pur:#D4AF37;--ok:#D4AF37;--chip:#242018;--inset:#0D0D0D;--sh:0 8px 24px #0009;--accent:#D4AF37;--text:#F7F3E8;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(160deg,var(--bg1),var(--bg2)) fixed;color:var(--tx);font:15px system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}
+.w{max-width:1000px;margin:auto;padding:14px}h1{font-size:28px;margin:2px 0;letter-spacing:1px;color:var(--pur)}h1 b{background:linear-gradient(90deg,var(--tx),var(--mut));-webkit-background-clip:text;background-clip:text;color:transparent}
+.tag{color:var(--mut);font-size:13px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:12px;box-shadow:var(--sh)}
+.teams{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.t{border:3px solid var(--card);border-radius:50%;aspect-ratio:1;display:grid;place-items:center;font-weight:800;font-size:12px;cursor:pointer;color:#fff;position:relative;box-shadow:0 3px 10px #0003}.t.sel{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold)}.t small{position:absolute;bottom:-17px;font-size:10px;color:var(--mut);font-weight:400;white-space:nowrap}
+button{font:inherit;border:0;border-radius:12px;padding:10px 14px;cursor:pointer;background:var(--chip);color:var(--tx);font-weight:600}button:disabled{opacity:.4;cursor:not-allowed}
+.go{background:linear-gradient(90deg,var(--tx),var(--mut));color:var(--card);font-weight:800;width:100%;padding:14px;box-shadow:0 6px 16px #0003}input{background:var(--inset);border:1px solid var(--line);color:var(--tx);border-radius:12px;padding:12px;width:100%;font:inherit}
+.bid{width:100%;padding:28px 10px;font-size:32px;font-weight:900;letter-spacing:2px;background:linear-gradient(90deg,var(--tx),var(--mut),var(--tx),var(--mut),var(--tx));background-size:250%;color:var(--card);border-radius:20px;box-shadow:0 10px 30px #0004;animation:p 1.3s infinite,s 4s linear infinite}
+@keyframes p{50%{transform:scale(1.03)}}@keyframes s{to{background-position:250%}}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.sp{flex:1;min-width:150px}
+.name{font-size:24px;font-weight:800}.big{font-size:38px;font-weight:900;color:var(--ok)}.tm{font-size:50px;font-weight:900;color:var(--gold);min-width:60px;text-align:center}
+.pill{background:var(--chip);border-radius:99px;padding:3px 10px;font-size:12px;color:var(--pur);font-weight:600}.bar{height:7px;background:var(--chip);border-radius:9px;overflow:hidden;margin:4px 0}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--pur),var(--gold))}
+.bd{display:grid;grid-template-columns:repeat(auto-fit,minmax(115px,1fr));gap:6px;font-size:12px}.bd div{background:var(--inset);border-radius:8px;padding:6px 8px}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:6px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--mut)}.sc{overflow-x:auto}
+.log{max-height:150px;overflow:auto;font-size:13px;color:var(--mut)}.log b{color:var(--tx)}.demo{color:var(--mut);font-size:12px;margin:6px 0 12px}
+select{background:var(--chip);color:var(--tx);border:0;border-radius:10px;padding:9px}.sold{background:var(--tx);color:var(--card);border-radius:12px;padding:8px 12px;font-weight:800;margin-bottom:10px;text-align:center}
+.sq{display:flex;gap:8px;overflow-x:auto}.sq>div{flex:0 0 auto;text-align:center;font-size:11px;max-width:96px}.player-role-icon{display:inline-grid;place-items:center;flex:0 0 auto;border-radius:12px;background:linear-gradient(145deg,#1B2A40,#172338);border:1px solid #344761;color:#F5F7FA;font-size:25px;line-height:1}
+.wa{display:inline-flex;align-items:center;gap:6px;background:var(--tx);color:var(--card);text-decoration:none;font-weight:800;border-radius:12px;padding:11px 16px}
+.steps{display:flex;gap:6px;margin:8px 0 12px}.st{flex:1;text-align:center;font-size:12px;padding:7px 2px;border-radius:99px;background:var(--chip);color:var(--mut);font-weight:700}.st.on{background:var(--tx);color:var(--card)}.st.dn{background:var(--mut);color:var(--card)}.card{padding:10px 12px;margin-bottom:9px;border-radius:14px}.name{font-size:19px}.big{font-size:28px}.tm{font-size:34px;min-width:44px}.bid{padding:15px 8px;font-size:21px;letter-spacing:1.5px;border-radius:14px}.pill{font-size:11px;padding:2px 8px}.tag{font-size:12px}table{font-size:12px}td,th{padding:4px}button{padding:7px 11px;font-size:13px;border-radius:10px}.go{padding:11px}.sold{padding:6px 10px;font-size:13px;margin-bottom:8px}.sq>div{font-size:10px;max-width:60px}.steps{margin:6px 0 9px}.st{padding:5px 2px;font-size:11px}.teams{gap:8px}
+#cf{position:fixed;inset:0;pointer-events:none;z-index:50;width:100%;height:100%}#toast{display:none;position:fixed;top:16%;left:50%;transform:translateX(-50%);z-index:55;color:#fff;font-weight:800;font-size:15px;text-align:center;padding:12px 20px;border-radius:16px;box-shadow:0 10px 30px #0006;max-width:92vw;animation:pop .45s cubic-bezier(.2,1.6,.4,1);text-shadow:0 1px 3px #0006}@keyframes pop{from{transform:translateX(-50%) scale(.3);opacity:0}}
+#mu{position:fixed;right:10px;bottom:10px;z-index:60;width:38px;height:38px;padding:0;border-radius:50%;font-size:17px;box-shadow:var(--sh)}
+#cdw{display:none;position:fixed;inset:0;z-index:70;background:#000c;color:#fff;align-items:center;justify-content:center;text-align:center;font-weight:800}.cdn{font-size:130px;line-height:1.1;animation:pop2 .6s}@keyframes pop2{from{transform:scale(2.2);opacity:0}}
+.analysis-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+.statline{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid var(--line);font-size:13px}
+.stat-muted{color:var(--mut);font-size:12px}
+.team-analysis{border:1px solid var(--line);border-radius:12px;padding:10px;margin:8px 0}
+
+.leaderboard-wrap{overflow-x:auto;margin-top:10px}
+.leaderboard{min-width:650px}
+.leaderboard tr.top-rank td{font-weight:800;background:var(--inset)}
+.rank-badge{display:inline-grid;place-items:center;min-width:28px;height:28px;border-radius:50%;background:var(--chip);font-weight:900}
+.score-cell{font-weight:900;font-size:16px}
+.coverage{font-size:11px;color:var(--mut)}
+.team-detail-title{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+
+.team-links{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:8px;margin-top:10px}
+.team-link{display:flex;align-items:center;justify-content:space-between;gap:6px;text-align:left;border:1px solid var(--line);background:var(--inset);min-height:46px}
+.team-link b{font-size:12px}
+.team-link small{font-size:11px;color:var(--mut)}
+.roster-player{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.roster-player:last-child{border-bottom:0}
+.roster-player .player-role-icon{flex:0 0 auto}
+.roster-meta{min-width:0;flex:1}
+
+.team-back{
+ display:inline-flex;align-items:center;gap:9px;min-height:44px;padding:9px 15px;
+ border:1px solid var(--line);border-radius:13px;background:var(--inset);
+ color:var(--text);font-weight:800;letter-spacing:.1px;cursor:pointer;
+ box-shadow:0 2px 8px rgba(0,0,0,.08);transition:transform .15s ease,border-color .15s ease,background .15s ease
+}
+.team-back .back-icon{
+ display:grid;place-items:center;width:27px;height:27px;border-radius:9px;
+ background:var(--accent);color:white;font-size:17px;line-height:1
+}
+.team-back:active{transform:scale(.97)}
+.team-page-head{display:flex;align-items:center;gap:12px;min-width:0}
+.team-crest{
+ display:grid;place-items:center;width:46px;height:46px;flex:0 0 46px;
+ border-radius:14px;background:var(--inset);border:1px solid var(--line);
+ font-size:23px
+}
+.team-section-title{display:flex;align-items:center;gap:9px}
+.team-section-icon{
+ display:grid;place-items:center;width:30px;height:30px;border-radius:10px;
+ background:var(--inset);border:1px solid var(--line);font-size:16px
+}
+@media (prefers-reduced-motion:reduce){.team-back{transition:none}}
+
+body{background:radial-gradient(ellipse at 50% -15%,#302611 0%,transparent 48%),linear-gradient(160deg,#050505,#101010) fixed;color:#F7F3E8}
+h1{color:#D4AF37}
+h1 b{background:linear-gradient(90deg,#FFF2C2,#D4AF37,#A77B18);-webkit-background-clip:text;background-clip:text;color:transparent}
+.go{background:linear-gradient(100deg,#A77B18,#D4AF37,#F2D675);color:#100D06;box-shadow:0 6px 18px #D4AF3733}
+.bid{background:linear-gradient(100deg,#A77B18,#D4AF37,#F2D675);color:#100D06;box-shadow:0 10px 28px #D4AF3733}
+.sold{background:linear-gradient(100deg,#F2D675,#D4AF37);color:#171208}
+.player-role-icon{background:linear-gradient(145deg,#292316,#17130B);border-color:#66501D;color:#F7E7B0}
+button:focus-visible{outline:2px solid #F2D675;outline-offset:2px}
+input:focus,select:focus{outline:2px solid #D4AF37;outline-offset:1px}
+.team-back .back-icon{background:#D4AF37;color:#100D06}
+
+
+.unsold{margin:0 0 12px;padding:15px 16px;border:1px solid #B84A3A;border-radius:14px;background:linear-gradient(110deg,#35100D,#1B0B0A);color:#FF8A78;font-weight:900;letter-spacing:1.2px;text-align:center;box-shadow:0 8px 22px #7F1D1D33}
+
+</style></head><body><div class="w">
+<h1>IPL <b>AUCTION ARENA</b></h1><div class="tag">BUILD YOUR DREAM XI. WIN THE AUCTION.</div>
+<div class="demo">Auction analysis uses purchased players only and IPL 2025 runs/wickets where records are available. Import the full 2025 stats CSV for complete coverage. Unclaimed teams stay empty. Only human players can bid.</div>
+<canvas id=cf></canvas><div id=toast></div><div id=cdw></div><button id=mu onclick="toggleMute()" title="Sound">🔊</button><div id=steps class=steps></div><div id="app"></div></div>
+<script>
+const TEAMS={CSK:["Chennai Super Kings","#e6b800"],MI:["Mumbai Indians","#0a4aa6"],RCB:["Royal Challengers Bengaluru","#d11a2a"],KKR:["Kolkata Knight Riders","#3b2466"],SRH:["Sunrisers Hyderabad","#f26a1b"],RR:["Rajasthan Royals","#e5197d"],DC:["Delhi Capitals","#0a78c2"],PBKS:["Punjab Kings","#c8102e"],GT:["Gujarat Titans","#1c3557"],LSG:["Lucknow Super Giants","#a3194f"]};
+const PURSE=120,MAXSQ=25,MAXOS=8,TIERS=[[90,2],[80,1.5],[70,1],[60,.75],[50,.5],[40,.3],[0,.2]],K=Object.keys(TEAMS);
+let seed=7;const R=()=>(seed=(seed*16807)%2147483647)/2147483647,ri=(a,b)=>Math.floor(a+R()*(b-a+1)),cl=x=>Math.max(0,Math.min(1,x));
+const FN=["Aarav","Vikram","Rohan","Kabir","Imran","Arjun","Dev","Nikhil","Sameer","Yash","Tarun","Ishaan","Rahul","Karan","Mihir","Jason","Liam","Noah"],LN=["Sharma","Verma","Nair","Reddy","Khan","Iyer","Patel","Gill","Rao","Menon","Das","Singh","Bose","Kulkarni","Hayes","Cole","Brandt","Marlow","Okoye","Dixon"],ROLES=["Batter","WK","Fast","Spin","AR"],RN={Batter:"Batter",WK:"Wicketkeeper",Fast:"Fast bowler",Spin:"Spin bowler",AR:"All-rounder"};
+const DATA="Virat Kohli:2:BI;Rohit Sharma:1.5:BI;Shubman Gill:2:BI;Suryakumar Yadav:2:BI;KL Rahul:1.5:WI;Ruturaj Gaikwad:1.5:BI;Yashasvi Jaiswal:2:BI;Rishabh Pant:2:WI;Shreyas Iyer:2:BI;Sanju Samson:2:WI;Rinku Singh:1.5:BI;Tilak Varma:1.5:BI;Riyan Parag:1:AI;Devdutt Padikkal:.75:BI;Sai Sudharsan:2:BI;Rajat Patidar:1.5:BI;Abhishek Sharma:2:AI;Prithvi Shaw:.5:BI;Nitish Rana:.75:BI;Manish Pandey:.3:BI;Faf du Plessis:1.5:BO;David Warner:1.5:BO;Jos Buttler:2:WO;Shikhar Dhawan:.75:BI;Devon Conway:1.5:WO;Kane Williamson:.75:BO;Aiden Markram:1.5:BO;Heinrich Klaasen:2:WO;Travis Head:2:BO;Mitchell Marsh:2:AO;Steve Smith:.5:BO;David Miller:1.5:BO;Shimron Hetmyer:1:BO;Nicholas Pooran:2:WO;Quinton de Kock:1.5:WO;Jonny Bairstow:1:WO;Harry Brook:1.5:BO;Liam Livingstone:1.5:AO;Glenn Phillips:1:WO;Daryl Mitchell:1:AO;Jason Roy:.75:BO;Alex Hales:.5:BO;Rilee Rossouw:.75:BO;Mayank Agarwal:.5:BI;Rahul Tripathi:.75:BI;Venkatesh Iyer:1.5:AI;Dhruv Jurel:1:WI;Prabhsimran Singh:1:WI;Priyansh Arya:1.5:BI;Vaibhav Sooryavanshi:1.5:BI;Hardik Pandya:2:AI;Ravindra Jadeja:2:AI;Axar Patel:1.5:AI;Shivam Dube:1.5:AI;Washington Sundar:1:AI;Krunal Pandya:1:AI;Nitish Kumar Reddy:1.5:AI;Deepak Hooda:.5:AI;Shahbaz Ahmed:.75:AI;Vijay Shankar:.5:AI;Sam Curran:1.5:AO;Ben Stokes:1.5:AO;Moeen Ali:1:AO;Chris Woakes:.75:AO;Will Jacks:1.5:AO;Andre Russell:2:AO;Sunil Narine:2:AO;Kieron Pollard:.5:AO;Jason Holder:1:AO;Romario Shepherd:1:AO;Rovman Powell:.75:BO;Odean Smith:.3:AO;Kyle Mayers:.75:AO;Dwayne Bravo:.5:AO;Cameron Green:2:AO;Marcus Stoinis:1.5:AO;Glenn Maxwell:1.5:AO;Daniel Sams:.5:AO;Tim David:1.5:BO;Marco Jansen:1.5:AO;Dwaine Pretorius:.3:AO;Wayne Parnell:.5:FO;Wiaan Mulder:.5:AO;Rachin Ravindra:1.5:AO;James Neesham:.5:AO;Mitchell Santner:1:AO;Kyle Jamieson:.75:FO;Azmatullah Omarzai:1:AO;Mohammad Nabi:.5:AO;Rashid Khan:2:SO;Shakib Al Hasan:.75:AO;Dasun Shanaka:.5:AO;Wanindu Hasaranga:1.5:SO;Sikandar Raza:1:AO;Harshal Patel:1.5:FI;Rahul Tewatia:1:AI;Anukul Roy:.3:AI;Ramandeep Singh:.75:AI;Naman Dhir:1:AI;Shashank Singh:1:BI;Jasprit Bumrah:2:FI;Mohammed Shami:1.5:FI;Mohammed Siraj:1.5:FI;Arshdeep Singh:2:FI;Bhuvneshwar Kumar:1.5:FI;T Natarajan:1:FI;Deepak Chahar:1:FI;Avesh Khan:1:FI;Prasidh Krishna:1.5:FI;Umran Malik:.5:FI;Mukesh Kumar:.75:FI;Akash Deep:.75:FI;Mayank Yadav:1.5:FI;Khaleel Ahmed:1:FI;Kartik Tyagi:.5:FI;Shivam Mavi:.5:FI;Yash Dayal:1:FI;Simarjeet Singh:.5:FI;Chetan Sakariya:.5:FI;Sandeep Sharma:1:FI;Mohit Sharma:.75:FI;Ishant Sharma:.5:FI;Umesh Yadav:.5:FI;Jaydev Unadkat:.5:FI;Trent Boult:2:FO;Lockie Ferguson:1:FO;Tim Southee:.5:FO;Adam Milne:.75:FO;Matt Henry:1:FO;Kagiso Rabada:2:FO;Anrich Nortje:1.5:FO;Lungi Ngidi:1:FO;Gerald Coetzee:1.5:FO;Pat Cummins:2:FO;Josh Hazlewood:2:FO;Mitchell Starc:2:FO;Jason Behrendorff:.75:FO;Riley Meredith:.75:FO;Andrew Tye:.5:FO;Jhye Richardson:1:FO;Spencer Johnson:1.5:FO;Jofra Archer:1.5:FO;Mark Wood:1:FO;Reece Topley:.75:FO;Chris Jordan:.75:FO;Tymal Mills:.5:FO;David Willey:.75:AO;Fazalhaq Farooqi:1:FO;Naveen-ul-Haq:1.5:FO;Mujeeb Ur Rahman:1:SO;Dushmantha Chameera:.75:FO;Nuwan Thushara:1:FO;Matheesha Pathirana:2:FO;Dilshan Madushanka:1:FO;Vaibhav Arora:.75:FI;Harpreet Brar:.75:SI;Akash Madhwal:.75:FI;Vijaykumar Vyshak:.75:FI;Anshul Kamboj:1:FI;Yudhvir Singh:.5:FI;Rajvardhan Hangargekar:.5:FI;Mukesh Choudhary:.5:FI;Tushar Deshpande:.75:FI;Praveen Dubey:.3:SI;Rasikh Dar:.75:FI;Prince Yadav:.5:FI;Eshan Malinga:.75:FO;Akash Singh:.5:FI;Mustafizur Rahman:1:FO;Alzarri Joseph:.75:FO;Obed McCoy:.5:FO;Yuzvendra Chahal:2:SI;Kuldeep Yadav:2:SI;Ravichandran Ashwin:1.5:SI;Varun Chakravarthy:2:SI;Ravi Bishnoi:1.5:SI;Rahul Chahar:1:SI;Piyush Chawla:.75:SI;Amit Mishra:.3:SI;Karn Sharma:.5:SI;Mayank Markande:.75:SI;Sai Kishore:1:SI;Suyash Sharma:.75:SI;Murugan Ashwin:.3:SI;Shreyas Gopal:.5:SI;Noor Ahmad:2:SO;Qais Ahmad:.5:SO;Akeal Hosein:.75:SO;Tabraiz Shamsi:.5:SO;Keshav Maharaj:.75:SO;Adam Zampa:1:SO;Ashton Agar:.5:SO;Ish Sodhi:.5:SO;Maheesh Theekshana:1:SO;Akila Dananjaya:.3:SO;Vijayakanth Viyaskanth:.3:SO;Mayank Dagar:.5:AI;Swapnil Singh:.5:AI;Himanshu Sharma:.5:SI;Digvesh Rathi:.75:SI;Vignesh Puthur:.5:SI;Krishnappa Gowtham:.3:AI;Jalaj Saxena:.3:AI;Prashant Solanki:.5:SI;Saurabh Kumar:.3:SI;Kumar Kartikeya:.5:SI;Manav Suthar:.5:SI;Digvesh Singh:.5:SI;MS Dhoni:1.5:WI;Dinesh Karthik:.75:WI;Wriddhiman Saha:.5:WI;Jitesh Sharma:1.5:WI;Phil Salt:2:WO;Josh Inglis:1.5:WO;Matthew Wade:.75:WO;Alex Carey:.75:WO;Tom Banton:.75:WO;Rahmanullah Gurbaz:1:WO;Kusal Mendis:.75:WO;Litton Das:.75:WO;Ryan Rickelton:1:WO;Robin Uthappa:.5:WI;Sheldon Jackson:.3:WI;Anuj Rawat:.5:WI;KS Bharat:.5:WI;Vishnu Vinod:.3:WI;Ishan Kishan:1.5:WI;Abhishek Porel:.75:WI;Urvil Patel:.5:WI;Aryan Juyal:.3:WI;N Jagadeesan:.5:WI;Shai Hope:.75:WO;Mushfiqur Rahim:.5:WO;Tim Seifert:.75:WO;Ben McDermott:.5:WO;Tom Kohler-Cadmore:.5:BO;James Vince:.5:BO;Evin Lewis:.75:BO;Chris Lynn:.5:BO;Martin Guptill:.5:BO;Aaron Finch:.5:BO;Ambati Rayudu:.5:BI;Suresh Raina:.5:BI;Yusuf Pathan:.5:AI;Gurkeerat Singh Mann:.3:AI;Mandeep Singh:.3:BI;Rishi Dhawan:.5:AI;Raj Bawa:.5:AI;Abdul Samad:.75:BI;Ashutosh Sharma:1:BI;Mahipal Lomror:.5:AI;Shubham Dubey:.5:BI;Anmolpreet Singh:.5:BI;Harnoor Singh:.3:BI;Robin Minz:.5:WI;Sameer Rizvi:.75:BI;Nehal Wadhera:1:BI;Abhinav Manohar:.75:BI;Aniket Verma:.75:BI;Ayush Mhatre:1:BI;Kamindu Mendis:.75:AO;Prerak Mankad:.5:AI;Shahrukh Khan:.75:BI",RM={B:"Batter",W:"WK",F:"Fast",S:"Spin",A:"AR"},CLR=Object.values(TEAMS).map(t=>t[1]);
+const P=DATA.split(";").map((x,i)=>{const [n,b,r]=x.split(":");return{id:i,name:n,base:+b,role:RM[r[0]],os:r[1]=="O"}});
+const SK=["#f1c27d","#e0ac69","#c68642","#8d5524","#a1665e"],HC=["#111","#2b1b10","#3a2a1a","#555"],IC={Batter:"🏏",WK:"🧤",Fast:"⚡",Spin:"🌀",AR:"⭐"};
+function av(p,s=96){const z=Math.max(38,Math.round(s*.72));return `<span class=player-role-icon style="width:${z}px;height:${z}px;font-size:${Math.max(19,Math.round(s*.34))}px">${IC[p.role]}</span>`}
+const f=n=>n>=1?n.toFixed(2)+" Cr":Math.round(n*100)+" Lakh",$=id=>document.getElementById(id),pl=i=>P[i];
+const LINK=location.href.split("#")[0];let S=null,db=null,usr=null,myid="me",host=true,mode=null,myname=localStorage.getItem("nm")||"",dirty=0,bidSeen={},status="",viewTeamKey=null;
+function shuffledPlayerOrder(){
+ // Shuffle within each role group, then auction in 25-player sets:
+ // Batters → Bowlers (fast + spin) → Wicketkeeper-batters → All-rounders.
+ const shuffle=a=>{
+  for(let i=a.length-1;i>0;i--){
+   const j=Math.floor(Math.random()*(i+1));
+   [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+ };
+ const groups=[
+  shuffle(P.filter(p=>p.role==="Batter").map(p=>p.id)),
+  shuffle(P.filter(p=>p.role==="Fast"||p.role==="Spin").map(p=>p.id)),
+  shuffle(P.filter(p=>p.role==="WK").map(p=>p.id)),
+  shuffle(P.filter(p=>p.role==="AR").map(p=>p.id))
+ ];
+ const order=[];
+ for(let round=0;groups.some(g=>g.length);round++){
+  const g=groups[round%4];
+  if(g.length)order.push(...g.splice(0,25));
+ }
+ return order;
+}
+const fresh=()=>({phase:"lobby",left:{},owners:{},names:{},order:shuffledPlayerOrder(),i:-1,inc:.1,paused:false,rem:0,cur:null,sq:Object.fromEntries(K.map(k=>[k,[]])),purse:Object.fromEntries(K.map(k=>[k,PURSE])),hist:[],unsold:[],log:[],flash:null});
+const my=()=>K.find(k=>S&&S.owners[k]==myid);
+const say=h=>{S.log.unshift(h);S.log=S.log.slice(0,40)},pub=()=>{dirty=1};
+const nb=()=>S.cur.lead?+(S.cur.bid+S.inc).toFixed(2):S.cur.bid;
+const osn=k=>S.sq[k].filter(x=>pl(x.id).os).length;
+const bidBlockReason=k=>{
+ const c=S&&S.cur;
+ if(!c||S.phase!=="live")return "AUCTION STOPPED";
+ if(S.paused)return "PAUSED";
+ if(S.cd&&Date.now()<S.cd)return "STARTING…";
+ if(c.lead===k)return "YOU LEAD ✓";
+ if(S.sq[k].length>=MAXSQ)return "SQUAD FULL";
+ if(pl(c.pid).os&&osn(k)>=MAXOS)return "OVERSEAS LIMIT REACHED";
+ if(S.purse[k]<=0.000001)return "PURSE EXHAUSTED";
+ if(S.purse[k]+1e-9<nb())return "NOT ENOUGH PURSE";
+ return "";
+};
+const can=k=>!!k&&!bidBlockReason(k);
+function begin(){if(!host||!S||S.phase!=="lobby")return;S.order=shuffledPlayerOrder();S.phase="live";S.i=-1;S.cd=Date.now()+5000;nxt();S.cur.end=S.cd+7000;pub();render()}
+async function stopAuction(){
+ if(!host||!S||S.phase!=="live")return;
+ // Freeze the auction first. Once phase becomes "done", queued human bids
+ // are rejected by the host listener and all clients render the results.
+ const c=S.cur;
+ if(c){
+  const p=pl(c.pid);
+  if(c.lead&&S.purse[c.lead]+1e-9>=c.bid&&S.sq[c.lead].length<MAXSQ&&!(p.os&&osn(c.lead)>=MAXOS)){
+   S.purse[c.lead]=+Math.max(0,S.purse[c.lead]-c.bid).toFixed(2);
+   S.sq[c.lead].push({id:p.id,paid:c.bid});
+   S.hist.push({id:p.id,to:c.lead,amt:c.bid});
+   S.flash=`🔨 SOLD before stop: ${p.name} → ${c.lead} for ${f(c.bid)}`;
+   say(S.flash);
+  }else if(!c.lead){
+   S.unsold.push(p.id);
+   S.flash=`🚫 UNSOLD! ${p.name} — Auction stopped by host`;
+   say(S.flash);
+  }
+ }
+ S.cur=null;S.phase="done";S.paused=false;S.stoppedByHost=true;S.stoppedAt=Date.now();pub();
+ // Push the terminal state immediately so every connected friend's
+ // game/state listener receives the same stopped auction.
+ if(db){
+  try{
+   dirty=0;
+   await db.doc("game/state").set(JSON.parse(JSON.stringify(S)));
+  }catch(e){
+   dirty=1;
+   status="Auction stopped locally; shared sync failed. Check the multiplayer database connection.";
+  }
+ }
+ report();
+}
+function nxt(){S.i++;if(S.i>=S.order.length){S.cur=null;S.phase="done";pub();return render()}const p=pl(S.order[S.i]);S.cur={pid:p.id,bid:p.base,lead:null,end:Date.now()+7000};say(`<b>${p.name}</b> up · base ${f(p.base)}`);pub();render()}
+function hbid(k){if(!S.cur||!can(k))return;const c=S.cur;c.bid=nb();c.lead=k;c.end=Date.now()+5000;say(`<b>${k}</b> bid ${f(c.bid)}`);pub();render()}
+function sell(){const c=S.cur,p=pl(c.pid);if(c.lead){S.fx={n:(S.fx?S.fx.n:0)+1,team:c.lead,txt:p.name+" · "+f(c.bid)};S.purse[c.lead]=+(S.purse[c.lead]-c.bid).toFixed(2);S.sq[c.lead].push({id:p.id,paid:c.bid});S.hist.push({id:p.id,to:c.lead,amt:c.bid});S.flash=`🔨 SOLD! ${p.name} → ${c.lead} for ${f(c.bid)}`;say(S.flash)}else{S.unsold.push(p.id);S.flash=`🚫 UNSOLD! ${p.name} — No team placed a bid`;say(S.flash)}nxt()}
+function press(){const k=my();if(!k)return;if(host)hbid(k);else if(db){const pid=S.cur.pid;db.doc("bids/"+myid).set({team:k,pid,n:Date.now()+Math.random()})}}
+function claim(k){if(host){if(S.owners[k]&&S.owners[k]!=myid)return;K.forEach(x=>{if(S.owners[x]==myid)delete S.owners[x]});S.owners[k]=myid;S.names[myid]=myname||"Host";pub();render()}else if(db)db.doc("claims/"+myid).set({team:k,name:myname||"Player"})}
+function hostLoop(){
+ if(!S||!host||S.phase!="live"||!S.cur||S.paused)return;
+ // Human-only auction: no automatic bids. The current player goes unsold
+ // when the timer expires without a real participant placing a bid.
+ if(Date.now()>=S.cur.end)sell();
+}
+setInterval(()=>{hostLoop();if(host&&db&&dirty&&S){dirty=0;db.doc("game/state").set(JSON.parse(JSON.stringify(S))).catch(()=>{})}tick()},120);
+let cx=false;
+function leave(){if(!cx){cx=true;render();return}cx=false;const k=my();if(db&&!host&&k)db.doc("claims/"+myid).set({exit:true,team:k,n:Date.now()})}
+function rejoin(){const k=S.left&&S.left[myid];if(k&&db)db.doc("claims/"+myid).set({rejoin:true,team:k,name:myname||"Player",n:Date.now()})}
+function cdTick(){const w=$("cdw");if(!w)return;const left=S&&S.phase=="live"&&S.cd?S.cd-Date.now():0;if(left>0){const n=Math.ceil(left/1000);if(w._n!=n){w._n=n;w.innerHTML=`<div><div style="font-size:14px;letter-spacing:3px;opacity:.85">AUCTION STARTS IN</div><div class=cdn>${n}</div><div style="opacity:.85">Get ready to bid!</div></div>`;tn(n>1?660:880,.14,"triangle",.14)}w.style.display="flex"}else if(w._n){w._n=0;w.style.display="none";tn(1175,.35,"triangle",.14);tn(1568,.5,"triangle",.12,.15)}}
+function tick(){cdTick();if(!S||!S.cur||S.phase!="live"||!$("tm"))return;const c=S.cur,t=S.paused?S.rem:c.end-Date.now();const sec=Math.ceil(t/1000);$("tm").textContent=Math.max(0,sec);if(!S.paused&&c.lead&&sec>0&&sec<=3&&sec!=lastSec)sfx.tick();lastSec=sec;$("cb").textContent=f(c.bid);$("ld").textContent=c.lead||"No bids yet";const m=my(),b=$("bb");if(b){const reason=m?bidBlockReason(m):"PICK A TEAM";b.disabled=!m||!!reason;b.textContent=!m?"PICK A TEAM":!reason?"BID "+f(nb()):reason}}
+let AC=null,mute=false,lastFx=-1,lastBid="",lastSec=9;
+function ctx(){try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.state=="suspended")AC.resume()}catch(e){}return AC}
+document.addEventListener("click",()=>ctx());
+function tn(f,d,t,v,o){if(mute)return;const a=ctx();if(!a)return;const t0=a.currentTime+(o||0),os=a.createOscillator(),g=a.createGain();os.type=t||"sine";os.frequency.value=f;g.gain.setValueAtTime(v||.15,t0);g.gain.exponentialRampToValueAtTime(.001,t0+d);os.connect(g);g.connect(a.destination);os.start(t0);os.stop(t0+d)}
+const sfx={bid:()=>tn(720,.09,"square",.07),tick:()=>tn(980,.06,"triangle",.1),sold:()=>{tn(110,.25,"sawtooth",.22);tn(70,.35,"sine",.3);[523,659,784,1047].forEach((f,i)=>tn(f,.35,"triangle",.14,.28+i*.12));tn(1047,.7,"sine",.12,.8)}};
+function toggleMute(){mute=!mute;$("mu").textContent=mute?"🔇":"🔊"}
+function confetti(col){const c=$("cf");if(!c||!c.getContext)return;c.width=innerWidth;c.height=innerHeight;const x=c.getContext("2d"),cs=[col,"#ffffff","#999999","#f5b50a","#ff5e62","#4f8cff"],ps=Array.from({length:130},()=>({x:innerWidth/2,y:innerHeight*.35,vx:(Math.random()-.5)*14,vy:-Math.random()*13-3,r:3+Math.random()*5,c:cs[Math.floor(Math.random()*cs.length)],a:Math.random()*6,va:(Math.random()-.5)*.4}));let n=0;(function f(){x.clearRect(0,0,c.width,c.height);ps.forEach(p=>{p.vy+=.35;p.x+=p.vx;p.y+=p.vy;p.a+=p.va;x.save();x.translate(p.x,p.y);x.rotate(p.a);x.fillStyle=p.c;x.fillRect(-p.r,-p.r/2,p.r*2,p.r);x.restore()});if(++n<150)requestAnimationFrame(f);else x.clearRect(0,0,c.width,c.height)})()}
+function celebrate(fx){confetti(TEAMS[fx.team][1]);sfx.sold();const t=$("toast");if(!t)return;t.style.background=TEAMS[fx.team][1];t.textContent="🎉 SOLD to "+TEAMS[fx.team][0]+"! "+fx.txt;t.style.display="block";clearTimeout(t._h);t._h=setTimeout(()=>t.style.display="none",2800)}
+function checkFx(){const n=S.fx?S.fx.n:0;if(lastFx<0){lastFx=n;return}if(n>lastFx){lastFx=n;celebrate(S.fx)}else if(S.cur&&S.cur.lead){const k=S.cur.pid+":"+S.cur.bid+":"+S.cur.lead;if(k!=lastBid)sfx.bid();lastBid=k}}
+function setStep(n){const L=["Join","Team","Auction","Results"];$("steps").innerHTML=L.map((x,i)=>`<span class="st ${i+1==n?"on":i+1<n?"dn":""}">${i+1<n?"✓":i+1} ${x}</span>`).join("")}
+function joinGo(){if(!myname.trim()){status="Please enter your name first.";return lobby()}status="";room()}
+function lobby(){const m=my();
+if(!mode){setStep(1);$("app").innerHTML=`<div class=card style="text-align:center"><div style="font-size:44px">🏏</div><div class=name>Join the auction</div><div class=tag style="margin:6px 0 14px">Step 1 · enter your name to join the room</div><input id=nm value="${myname}" placeholder="Your name" oninput="myname=this.value;localStorage.setItem('nm',myname)"><br><br><button class=go onclick="joinGo()">Join auction room →</button>${status?`<div class=tag style="margin-top:10px">${status}</div>`:""}</div>`;return}
+setStep(2);
+$("app").innerHTML=`${status?`<div class=tag style="margin-bottom:8px">${status}</div>`:""}<div class=card><b>📲 Invite friends</b><div class=tag style="margin:4px 0 10px">Friends must be able to open the shared artifact (invite them in Share settings first).</div><div class=row><a class=wa target=_blank rel=noopener href="https://wa.me/?text=${encodeURIComponent("🏏 Join my IPL Auction Arena! Open this link, enter your name and pick a team: "+LINK)}">📲 Share on WhatsApp</a><button onclick="try{navigator.clipboard.writeText(LINK);this.textContent='✅ Copied'}catch(e){prompt('Copy this link',LINK)}">🔗 Copy link</button></div></div>
+<div class=card><b>Step 2 · Choose your team</b> <span class=tag>(teams lock when the auction starts · player order is shuffled at start)</span> <span class=tag>(playing as ${myname||"Player"})</span><div class=teams style="margin:12px 0 26px">${K.map(k=>`<div class="t ${S&&S.owners[k]&&S.owners[k]==myid?"sel":""}" style="background:${TEAMS[k][1]};${S&&S.owners[k]&&S.owners[k]!=myid?"opacity:.45":""}" onclick="claim('${k}')">${k}<small>${S&&S.owners[k]?(S.names[S.owners[k]]||"Taken"):"Available"}</small></div>`).join("")}</div>${host?`<button class=go ${m?"":"disabled"} onclick="begin()">${m?"▶ Start auction as "+m:"Pick your team first"}</button>`:`<div class=tag>${S?(m?"✅ Team chosen. Waiting for the host to start the auction…":"Pick a team, then wait for the host to start."):"Waiting for the host to open the room…"}</div>`}</div>`}
+function solo(){mode="solo";host=true;S=fresh();status="";render()}
+async function room(){status="Connecting to the room…";mode="room";render();try{db=await claude.use("db");usr=await claude.use("user");}catch(e){}
+ if(!db){host=true;myid="me";S=fresh();status="Offline mode: human-only bidding on this device. Friends on other phones need a working shared multiplayer room/backend to join.";return render()}
+ myid=await usr.id();host=!!(await usr.isOwner());status=host?"You are the host. Friends open the link and pick a team.":"Joined as a player.";
+ if(host){try{const d=await db.doc("game/state").get();S=d.exists&&d.data().phase!="done"?d.data():fresh()}catch(e){S=fresh()}
+  // On every fresh host entry to a lobby, create one shared role-based shuffle.
+  // Guests only read this order; they never reshuffle independently.
+  if(S.phase==="lobby")S.order=shuffledPlayerOrder();
+  pub();
+  db.collection("claims").onSnapshot(s=>{s.docChanges().forEach(ch=>{const d=ch.doc.data(),u=ch.doc.id;if(!d)return;if(S.phase=="live"){S.left=S.left||{};if(d.exit&&S.owners[d.team]==u){delete S.owners[d.team];S.left[u]=d.team;say(`🚪 <b>${S.names[u]||"A player"}</b> left. ${d.team} is unclaimed; no bot will bid for it.`);pub();render()}else if(d.rejoin&&S.left[u]==d.team&&!S.owners[d.team]){S.owners[d.team]=u;delete S.left[u];say(`↩ <b>${S.names[u]||"A player"}</b> rejoined ${d.team}`);pub();render()}return}if(S.phase!="lobby")return;if(S.owners[d.team]&&S.owners[d.team]!=u)return;K.forEach(x=>{if(S.owners[x]==u)delete S.owners[x]});S.owners[d.team]=u;S.names[u]=String(d.name||"Player").slice(0,16);pub();render()})});
+  db.collection("bids").onSnapshot(s=>{s.docChanges().forEach(ch=>{const d=ch.doc.data(),u=ch.doc.id;if(!d||bidSeen[u]===d.n||ch.type=="removed")return;bidSeen[u]=d.n;if(S.phase=="live"&&S.cur&&d.pid==S.cur.pid&&S.owners[d.team]==u)hbid(d.team)})})}if(!host)db.doc("game/state").onSnapshot(s=>{if(s.exists){S=s.data();render()}});render()}
+const chip=(i,t)=>`<span class=pill>${i} ${t}</span>`;
+
+function viewTeam(k){viewTeamKey=k;renderTeamPage(k)}
+function closeTeamPage(){viewTeamKey=null;render()}
+function renderTeamPage(k){
+ const squad=(S.sq&&S.sq[k])||[];
+ const overseas=squad.filter(x=>pl(x.id).os).length;
+ const indian=squad.length-overseas;
+ const players=squad.map(x=>({...pl(x.id),paid:Number(x.paid)||0})).sort((a,b)=>a.name.localeCompare(b.name));
+ $("app").innerHTML=`<div class=card>
+  <div class=row><button class=team-back onclick="closeTeamPage()"><span class=back-icon aria-hidden=true>‹</span><span>Back to auction</span></button><span class=sp></span><span class=pill>🏟 ${S.phase==="live"?"LIVE AUCTION":"AUCTION RESULTS"}</span></div>
+  <div class="team-page-head" style="margin-top:14px">
+   <div class=team-crest style="border-color:${TEAMS[k][1]}55">🏏</div>
+   <div class=sp><div class=name style="color:${TEAMS[k][1]}">${TEAMS[k][0]}</div><div class=tag>👤 ${S.owners[k]?(S.names[S.owners[k]]||"Player"):"No participant assigned"}</div></div>
+   <div style="text-align:right"><div class=big>${players.length}</div><div class=tag>Players bought</div></div>
+  </div>
+  <div class=bd style="margin-top:12px">
+   <div><b>${f(S.purse[k])}</b><br>Remaining purse</div>
+   <div><b>🇮🇳 ${indian}</b><br>Indian players</div>
+   <div><b>🌍 ${overseas}/8</b><br>Overseas players</div>
+   <div><b>${Math.max(0,MAXSQ-players.length)}</b><br>Squad slots left</div>
+  </div>
+  <div class=bar style="height:9px;margin-top:12px"><i style="width:${Math.min(100,overseas/8*100)}%"></i></div>
+  <div class=tag>Overseas limit: maximum 8 players per team. Indian players have no nationality cap in this game.</div>
+ </div>
+ <div class=card><div class=team-section-title><span class=team-section-icon>👥</span><b style="font-size:18px">${TEAMS[k][0]} – Purchased squad</b></div>
+  ${players.length?players.map(p=>`<div class=roster-player>
+   ${av(p,48)}
+   <div class=roster-meta><b>${p.os?"🌍":"🇮🇳"} ${p.name}</b><div class=tag>${RN[p.role]} · ${p.os?"Overseas":"Indian"}</div></div>
+   <div style="text-align:right"><b>${f(p.paid)}</b><div class=tag>Winning bid</div></div>
+  </div>`).join(""):`<p class=tag style="margin-top:12px">This team has not purchased any players yet.</p>`}
+ </div>
+ <div class=card><div class=team-section-title><span class=team-section-icon>📊</span><b>Team limits & squad status</b></div>
+  <div class=statline><span>Overseas players</span><b>${overseas} / 8 ${overseas>=8?"· LIMIT REACHED":"· Slots available"}</b></div>
+  <div class=statline><span>Total squad size</span><b>${players.length} / ${MAXSQ}</b></div>
+ </div>`;
+}
+
+function render(){if(S)checkFx();if(viewTeamKey&&S&&S.phase!=="lobby")return renderTeamPage(viewTeamKey);if(!S||S.phase=="lobby")return lobby();if(S.phase=="done")return report();setStep(3);const c=S.cur,p=pl(c.pid),m=my();
+$("app").innerHTML=`${S.flash?`<div class="${S.flash.includes("UNSOLD")?"unsold":"sold"}">${S.flash}</div>`:""}<div class=card><div class=row><div>${av(p,88)}</div><div class=sp><div class=row style="gap:6px">${chip(IC[p.role],RN[p.role])}${chip(p.os?"🌍":"🇮🇳",p.os?"Overseas":"Indian")}${chip("💰","Base "+f(p.base))}${chip("#️⃣",(S.i+1)+"/"+S.order.length)}</div><div class=name>${p.name}</div></div><div><div class=tag>⏱</div><div class=tm id=tm>5</div></div></div>
+<div class=row style="margin-top:12px"><div class=sp><div class=tag>💵 CURRENT BID</div><div class=big id=cb></div></div><div style="text-align:right"><div class=tag>👑 LEADING</div><b id=ld style="font-size:22px;color:var(--gold)"></b></div></div></div>
+<button class=bid id=bb onclick="press()"></button>${S.left&&S.left[myid]&&!m?`<div class=card style="text-align:center"><b>🚪 You left the game</b><div class=tag style="margin:4px 0 8px">${S.left[myid]} is now unclaimed. You can only return to ${S.left[myid]}, and only while nobody else has it.</div>${S.owners[S.left[myid]]?"":`<button class=go onclick="rejoin()">↩ Rejoin ${S.left[myid]}</button>`}</div>`:""}<div class=tag style="margin:6px 0 12px;text-align:center">${m?"You are "+TEAMS[m][0]+" · purse "+f(S.purse[m])+(!host&&db?` <button style="padding:3px 8px;font-size:11px" onclick="leave()">${cx?"Tap again to exit":"🚪 Exit"}</button>`:""):S.left&&S.left[myid]?"":"Auction in progress: teams are locked, you are spectating"}</div>
+${host?`<div class=card><div class=row><b>⚙</b><button onclick="S.paused?(S.cur.end=Date.now()+S.rem,S.paused=false):(S.rem=S.cur.end-Date.now(),S.paused=true);pub();render()">${S.paused?"▶":"⏸"}</button><select onchange="S.inc=+this.value;pub()"><option value=.1>+0.10</option><option value=.2>+0.20</option><option value=.25>+0.25</option></select><button style="background:#b91c1c;color:white" onclick="this.disabled=true;this.textContent='STOPPING…';stopAuction()">■ STOP & ANALYSE</button></div></div>`:""}
+${m?`<div class=card><b>🧢 My squad (${S.sq[m].length})</b><div class=sq style="margin-top:8px">${S.sq[m].map(x=>`<div>${av(pl(x.id),50)}${pl(x.id).os?"🌍":"🇮🇳"} ${pl(x.id).name.split(" ")[0]}<br>${f(x.paid)}</div>`).join("")||"<span class=tag>No players yet</span>"}</div></div>`:""}
+<div class=card><b>🏟 Teams · tap a team to inspect its squad</b>
+ <div class=team-links>${K.map(k=>`<button class=team-link onclick="viewTeam('${k}')"><b style="color:${TEAMS[k][1]}">${k}</b><small>${S.sq[k].length} players · 🌍 ${osn(k)}/8</small></button>`).join("")}</div>
+ <div class=sc style="margin-top:12px"><table><tr><th>Team<th>Owner<th>💰<th>👥<th>🇮🇳<th>🌍</tr>${K.map(k=>`<tr><td><button style="padding:3px 5px;background:transparent;color:${TEAMS[k][1]};font-weight:800" onclick="viewTeam('${k}')">${k} ↗</button><td>${S.owners[k]?(S.names[S.owners[k]]||"Player"):"No player"}<td>${f(S.purse[k])}<td>${S.sq[k].length}<td>${S.sq[k].length-osn(k)}<td>${osn(k)}/8</tr>`).join("")}</table></div>
+ </div><div class="card log">${S.log.map(x=>`<div>${x}</div>`).join("")}</div>`;tick()}
+const BUILTIN_2025_STATS = {"Sai Sudharsan":{"runs":759,"wickets":null,"matches":15,"avg":54.21,"sr":156.17,"econ":null},"Suryakumar Yadav":{"runs":717,"wickets":null,"matches":16,"avg":65.18,"sr":167.92,"econ":null},"Virat Kohli":{"runs":657,"wickets":null,"matches":15,"avg":54.75,"sr":144.71,"econ":null},"Shubman Gill":{"runs":650,"wickets":null,"matches":15,"avg":50.0,"sr":155.88,"econ":null},"Mitchell Marsh":{"runs":627,"wickets":null,"matches":13,"avg":48.23,"sr":163.71,"econ":null},"Shreyas Iyer":{"runs":604,"wickets":null,"matches":17,"avg":50.33,"sr":175.07,"econ":null},"Yashasvi Jaiswal":{"runs":559,"wickets":null,"matches":14,"avg":43.0,"sr":159.71,"econ":null},"Prabhsimran Singh":{"runs":549,"wickets":null,"matches":17,"avg":32.29,"sr":160.53,"econ":null},"KL Rahul":{"runs":539,"wickets":null,"matches":13,"avg":53.9,"sr":149.72,"econ":null},"Jos Buttler":{"runs":538,"wickets":null,"matches":14,"avg":59.78,"sr":163.03,"econ":null},"Nicholas Pooran":{"runs":524,"wickets":null,"matches":14,"avg":43.67,"sr":196.25,"econ":null},"Heinrich Klaasen":{"runs":487,"wickets":null,"matches":14,"avg":44.27,"sr":172.7,"econ":null},"Priyansh Arya":{"runs":475,"wickets":null,"matches":17,"avg":27.94,"sr":179.25,"econ":null},"Aiden Markram":{"runs":445,"wickets":null,"matches":13,"avg":34.23,"sr":148.83,"econ":null},"Abhishek Sharma":{"runs":439,"wickets":null,"matches":14,"avg":33.77,"sr":193.39,"econ":null},"Rohit Sharma":{"runs":418,"wickets":null,"matches":15,"avg":29.86,"sr":149.29,"econ":null},"Travis Head":{"runs":374,"wickets":null,"matches":13,"avg":31.17,"sr":162.61,"econ":null},"Shivam Dube":{"runs":357,"wickets":null,"matches":14,"avg":32.45,"sr":132.22,"econ":null},"Tilak Varma":{"runs":343,"wickets":null,"matches":16,"avg":31.18,"sr":138.31,"econ":null},"Dhruv Jurel":{"runs":333,"wickets":null,"matches":14,"avg":37.0,"sr":156.34,"econ":null},"Rajat Patidar":{"runs":312,"wickets":null,"matches":15,"avg":24.0,"sr":143.78,"econ":null},"Ravindra Jadeja":{"runs":301,"wickets":null,"matches":14,"avg":33.44,"sr":135.59,"econ":null},"Rishabh Pant":{"runs":269,"wickets":null,"matches":14,"avg":24.45,"sr":133.17,"econ":null},"Axar Patel":{"runs":263,"wickets":null,"matches":12,"avg":26.3,"sr":157.49,"econ":null},"Vaibhav Sooryavanshi":{"runs":252,"wickets":null,"matches":7,"avg":36.0,"sr":206.56,"econ":null},"Devdutt Padikkal":{"runs":247,"wickets":null,"matches":10,"avg":27.44,"sr":150.61,"econ":null},"Sunil Narine":{"runs":246,"wickets":null,"matches":12,"avg":22.36,"sr":170.83,"econ":null},"Shimron Hetmyer":{"runs":239,"wickets":null,"matches":14,"avg":21.73,"sr":145.73,"econ":null},"Will Jacks":{"runs":233,"wickets":null,"matches":13,"avg":23.3,"sr":135.47,"econ":null},"Hardik Pandya":{"runs":224,"wickets":null,"matches":15,"avg":24.89,"sr":163.5,"econ":null},"Prasidh Krishna":{"runs":null,"wickets":25,"matches":15,"avg":null,"sr":null,"econ":null},"Noor Ahmad":{"runs":null,"wickets":24,"matches":14,"avg":null,"sr":null,"econ":null},"Josh Hazlewood":{"runs":null,"wickets":22,"matches":12,"avg":null,"sr":null,"econ":null}};
+
+const normPlayer=s=>String(s||"").toLowerCase().replace(/[^a-z0-9]/g,"").replace(/^(b|mr|ms)/,"");
+let imported2025Stats={};
+try{imported2025Stats=JSON.parse(localStorage.getItem("ipl2025Stats")||"{}")}catch(e){}
+function playerStats(name){
+ const all={...BUILTIN_2025_STATS,...((S&&S.stats2025)||{}),...imported2025Stats};
+ const key=normPlayer(name);
+ for(const [n,v] of Object.entries(all)) if(normPlayer(n)===key) return v;
+ // Common display-name variants from IPL datasets
+ const aliases={"bsaisudharsan":"saisudharsan","suriyakumaryadav":"suryakumaryadav"};
+ const alt=aliases[key];
+ if(alt) for(const [n,v] of Object.entries(all)) if(normPlayer(n)===alt) return v;
+ return null;
+}
+function csvCells(line){
+ const out=[];let cur="",q=false;
+ for(let i=0;i<line.length;i++){const c=line[i];if(c=='"'&&line[i+1]=='"'){cur+='"';i++}
+ else if(c=='"')q=!q;else if(c==","&&!q){out.push(cur);cur=""}else cur+=c}
+ out.push(cur);return out;
+}
+function importStatsFile(input){
+ const file=input.files&&input.files[0];if(!file)return;
+ const reader=new FileReader();
+ reader.onload=()=>{
+  try{
+   const lines=String(reader.result).replace(/^\uFEFF/,"").trim().split(/\r?\n/);
+   const heads=csvCells(lines.shift()).map(x=>x.trim().toLowerCase().replace(/[^a-z0-9]/g,""));
+   const ix=(...names)=>heads.findIndex(h=>names.includes(h));
+   const ni=ix("playername","player","name");
+   const ri=ix("runsscored","runs","totalruns");
+   const wi=ix("wicketstaken","wickets","totalwickets");
+   const mi=ix("matchesbatted","matches","mat");
+   const ai=ix("battingaverage","average","avg");
+   const si=ix("battingstrikerate","strikerate","sr");
+   const ei=ix("economyrate","economy","econ");
+   if(ni<0||ri<0||wi<0)throw new Error("CSV must include Player_Name, Runs_Scored and Wickets_Taken columns.");
+   const data={};
+   for(const line of lines){if(!line.trim())continue;const c=csvCells(line),name=(c[ni]||"").trim();if(!name)continue;
+    const num=i=>i<0||c[i]===""||c[i]===undefined?null:Number(c[i]);
+    data[name]={runs:num(ri),wickets:num(wi),matches:num(mi),avg:num(ai),sr:num(si),econ:num(ei)};
+   }
+   imported2025Stats={...imported2025Stats,...data};S.stats2025={...(S.stats2025||{}),...data};localStorage.setItem("ipl2025Stats",JSON.stringify(imported2025Stats));pub();
+   alert("Imported "+Object.keys(data).length+" player records. The host data is saved to the auction state.");report();
+  }catch(e){alert("Could not import CSV: "+e.message)}
+ };
+ reader.readAsText(file);
+}
+function statText(v){return v===null||v===undefined||v===""?"—":v}
+function teamAnalysis(k){
+ // The squad array is the source of truth: only players actually sold to this team count.
+ const squad=(S.sq&&S.sq[k])||[];
+ const records=squad.map(x=>({...pl(x.id),paid:Number(x.paid)||0,stats:playerStats(pl(x.id).name)}));
+ const known=records.filter(x=>x.stats&&(x.stats.runs!=null||x.stats.wickets!=null));
+ const runs=records.reduce((a,x)=>a+(x.stats&&x.stats.runs!=null?Number(x.stats.runs):0),0);
+ const wickets=records.reduce((a,x)=>a+(x.stats&&x.stats.wickets!=null?Number(x.stats.wickets):0),0);
+ const avgSR=records.filter(x=>x.stats&&x.stats.sr!=null).map(x=>Number(x.stats.sr));
+ const sr=avgSR.length?(avgSR.reduce((a,b)=>a+b,0)/avgSR.length).toFixed(1):"—";
+
+ const clamp100=n=>Math.max(0,Math.min(100,n));
+ const batScore=s=>{
+  if(!s||s.runs==null)return null;
+  const parts=[{v:clamp100(Number(s.runs)/759*100),w:.4}];
+  if(s.avg!=null)parts.push({v:clamp100(Number(s.avg)/60*100),w:.3});
+  if(s.sr!=null)parts.push({v:clamp100(Number(s.sr)/200*100),w:.3});
+  const w=parts.reduce((a,x)=>a+x.w,0);
+  return parts.reduce((a,x)=>a+x.v*x.w,0)/w;
+ };
+ const bowlScore=s=>{
+  if(!s||s.wickets==null)return null;
+  const parts=[{v:clamp100(Number(s.wickets)/25*100),w:.7}];
+  if(s.econ!=null)parts.push({v:clamp100((12-Number(s.econ))/7*100),w:.3});
+  const w=parts.reduce((a,x)=>a+x.w,0);
+  return parts.reduce((a,x)=>a+x.v*x.w,0)/w;
+ };
+ const mean=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:null;
+ const batters=records.filter(x=>["Batter","WK","AR"].includes(x.role)).map(x=>batScore(x.stats)).filter(x=>x!==null);
+ const bowlers=records.filter(x=>["Fast","Spin","AR"].includes(x.role)).map(x=>bowlScore(x.stats)).filter(x=>x!==null);
+ const allrounders=records.filter(x=>x.role==="AR").map(x=>{
+  const b=batScore(x.stats),w=bowlScore(x.stats);
+  return b===null?w:w===null?b:(b+w)/2;
+ }).filter(x=>x!==null);
+ const batting=mean(batters),bowling=mean(bowlers),allrounder=mean(allrounders);
+
+ // Squad balance is assessed from the actual roles bought, not from player prices.
+ const counts={
+  Batter:records.filter(x=>x.role==="Batter").length,
+  WK:records.filter(x=>x.role==="WK").length,
+  Fast:records.filter(x=>x.role==="Fast").length,
+  Spin:records.filter(x=>x.role==="Spin").length,
+  AR:records.filter(x=>x.role==="AR").length
+ };
+ const targets={Batter:4,WK:1,Fast:4,Spin:2,AR:2};
+ const targetTotal=Object.values(targets).reduce((a,b)=>a+b,0);
+ const balance=records.length?100*Object.keys(targets).reduce((a,r)=>a+Math.min(counts[r],targets[r]),0)/targetTotal:0;
+
+ // Missing statistical categories are excluded and the remaining weights are rescaled.
+ const categories=[{v:batting,w:.30},{v:bowling,w:.30},{v:allrounder,w:.15},{v:balance,w:.25}]
+  .filter(x=>x.v!==null);
+ const weight=categories.reduce((a,x)=>a+x.w,0);
+ const score=(records.length&&known.length&&weight)?
+  Math.round(categories.reduce((a,x)=>a+x.v*x.w,0)/weight*10)/10:null;
+ const coverage=records.length?Math.round(known.length/records.length*100):0;
+ return {k,bought:records,records,known,runs,wickets,sr,batting,bowling,allrounder,balance,score,coverage,counts};
+}
+function ana(k){return teamAnalysis(k)}
+function scoreText(v){return v===null?"N/A":v.toFixed(1)}
+function report(){
+ setStep(4);
+ // Include all ten teams, including teams with no purchases or no available player records.
+ const teams=K.map(ana).sort((a,b)=>{
+  if(a.score===null&&b.score!==null)return 1;
+  if(a.score!==null&&b.score===null)return -1;
+  if(a.score!==b.score)return (b.score||0)-(a.score||0);
+  if(a.coverage!==b.coverage)return b.coverage-a.coverage;
+  return b.bought.length-a.bought.length;
+ });
+ const bought=teams.flatMap(a=>a.records.map(x=>({...x,team:a.k})));
+ const totalRuns=bought.reduce((a,x)=>a+(x.stats&&x.stats.runs!=null?Number(x.stats.runs):0),0);
+ const totalWickets=bought.reduce((a,x)=>a+(x.stats&&x.stats.wickets!=null?Number(x.stats.wickets):0),0);
+ const missing=bought.filter(x=>!x.stats||(x.stats.runs==null&&x.stats.wickets==null)).length;
+ const rankedRows=teams.map((a,i)=>`<tr class="${i<3&&a.score!==null?'top-rank':''}">
+ <td><span class=rank-badge>${i+1}</span></td>
+ <td><b style="color:${TEAMS[a.k][1]}">${TEAMS[a.k][0]}</b><br><span class=coverage>${a.bought.length} players · ${a.coverage}% stats coverage</span></td>
+ <td>${a.bought.length}</td><td>${scoreText(a.batting)}</td><td>${scoreText(a.bowling)}</td><td>${scoreText(a.allrounder)}</td><td>${scoreText(a.balance)}</td>
+ <td class=score-cell>${scoreText(a.score)}${a.score===null?"":" / 100"}</td></tr>`).join("");
+ const teamCards=teams.filter(a=>a.bought.length).map((a,i)=>`<div class=team-analysis>
+ <div class=team-detail-title><span class=rank-badge>${teams.indexOf(a)+1}</span><b style="color:${TEAMS[a.k][1]}">${TEAMS[a.k][0]}</b><span class=sp></span><span class=pill>${a.bought.length} bought</span><span class=pill>Overall ${scoreText(a.score)}</span></div>
+ <div class=bd style="margin-top:8px"><div><b>${a.runs}</b><br>Known 2025 runs</div><div><b>${a.wickets}</b><br>Known 2025 wickets</div><div><b>${a.sr}</b><br>Average strike rate</div><div><b>${a.coverage}%</b><br>Stats coverage</div></div>
+ <div class=statline><span>Batting score</span><b>${scoreText(a.batting)}</b></div>
+ <div class=statline><span>Bowling score</span><b>${scoreText(a.bowling)}</b></div>
+ <div class=statline><span>All-rounder score</span><b>${scoreText(a.allrounder)}</b></div>
+ <div class=statline><span>Squad balance</span><b>${scoreText(a.balance)}</b></div>
+ <div class=sc><table><tr><th>Player</th><th>Role</th><th>Paid</th><th>Runs</th><th>Wkts</th><th>Avg</th><th>SR</th><th>Econ</th></tr>
+ ${a.records.map(p=>`<tr><td><b>${p.name}</b></td><td>${p.role}</td><td>${f(p.paid)}</td><td>${statText(p.stats&&p.stats.runs)}</td><td>${statText(p.stats&&p.stats.wickets)}</td><td>${statText(p.stats&&p.stats.avg)}</td><td>${statText(p.stats&&p.stats.sr)}</td><td>${statText(p.stats&&p.stats.econ)}</td></tr>`).join("")}</table></div>
+ <div class=stat-muted>${a.known.length}/${a.bought.length} purchased players have at least one built-in/imported 2025 performance record.</div>
+ </div>`).join("");
+ const best=teams.find(x=>x.score!==null);
+ const m=my();
+ $("app").innerHTML=`<div class=card style="text-align:center;border:2px solid var(--gold)">
+ <div style="font-size:40px">🏆</div><div class=tag>AUCTION RESULTS · ${S.stoppedByHost?"STOPPED BY HOST":"AUCTION COMPLETED"}</div>
+ <div class=name>${best?TEAMS[best.k][0]:"No team can be ranked yet"}</div>
+ <div class=tag>${best?`Current leaderboard leader · ${scoreText(best.score)}/100`:"Import complete IPL 2025 player statistics to calculate performance rankings."}</div>
+ <div class=bd style="margin-top:12px"><div><b>${bought.length}</b><br>Players sold</div><div><b>${teams.filter(x=>x.bought.length).length}</b><br>Teams with purchases</div><div><b>${totalRuns}</b><br>Known 2025 runs*</div><div><b>${totalWickets}</b><br>Known 2025 wickets*</div></div>
+ </div>
+ <div class=card><b style="font-size:18px">🏆 Overall team ranking · 1st to 10th</b>
+ <p class=stat-muted>All ten teams are compared and automatically sorted by overall score. Only players actually purchased before the host stopped/completed the auction are counted.</p>
+ <div class=leaderboard-wrap><table class=leaderboard><tr><th>Rank</th><th>Team</th><th>Players</th><th>Batting</th><th>Bowling</th><th>All-rounder</th><th>Balance</th><th>Overall</th></tr>${rankedRows}</table></div>
+ <div class=stat-muted style="margin-top:8px">Overall score uses available 2025 performance categories plus squad-role balance. If player records are missing, the team is marked with its statistics coverage; missing values are not treated as zero. Teams without any performance records show N/A and are placed below teams with a calculable score.</div>
+ </div>
+ <div class=card><b style="font-size:18px">📊 Purchased-player performance details</b>
+ <div class=row style="margin:10px 0"><button onclick="$('statsFile').click()">⬆ Import full IPL 2025 stats CSV</button><input id=statsFile type=file accept=".csv,text/csv" style="display:none" onchange="importStatsFile(this)"></div>
+ <div class=stat-muted>CSV columns: Player_Name, Runs_Scored, Wickets_Taken. Optional: Matches, Batting_Average, Batting_Strike_Rate, Economy_Rate. Import the full season dataset for a fairer ranking across every purchased player.</div>
+ ${teamCards||"<p>No players were purchased.</p>"}
+ <p class=stat-muted>* Totals include only available built-in/imported records. Missing player records are not treated as zero.</p></div>
+ <div class=card><b>Player value summary</b><div class=statline><span>Highest auction price</span><b>${bought.length?(()=>{const x=[...bought].sort((a,b)=>b.paid-a.paid)[0];return `${x.name} · ${f(x.paid)} (${x.team})`})():"—"}</b></div>
+ <div class=statline><span>Unsold players</span><b>${(S.unsold||[]).length}</b></div><div class=statline><span>Missing 2025 player records</span><b>${missing}</b></div></div>
+ ${m?`<div class=card><b>My team: ${m}</b><div class=tag>${(S.sq[m]||[]).length} purchased player(s)</div></div>`:""}
+ <div class=row><button class=go style="flex:1" onclick="print()">📄 Export PDF</button>${host?`<button class=go style="flex:1" onclick="S=fresh();pub();render()">New auction</button>`:""}</div>`;
+}
+lobby();
+</script></body></html>
